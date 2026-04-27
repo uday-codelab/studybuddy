@@ -9,14 +9,12 @@ export default function ChatInterface({ userId }: { userId: string }) {
   const [streaming, setStreaming] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Load history on mount
   useEffect(() => {
     fetch("/api/history")
       .then((r) => r.json())
       .then((data) => setMessages(data ?? []));
   }, []);
 
-  // Scroll to the bottom whenever the messages change
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -65,7 +63,6 @@ export default function ChatInterface({ userId }: { userId: string }) {
         return updated;
       });
     } finally {
-      // Save assistant message after stream completes
       setMessages(prev => {
         const last = prev[prev.length - 1];
         fetch("/api/history", {
@@ -79,7 +76,6 @@ export default function ChatInterface({ userId }: { userId: string }) {
     }
   }
 
-  // Clear history
   async function clearHistory() {
     await fetch("/api/history", { method: "DELETE" });
     setMessages([]);
@@ -110,14 +106,14 @@ export default function ChatInterface({ userId }: { userId: string }) {
         <div ref={bottomRef} />
       </div>
 
-      <div className="border-t border-gray-200 p-4">
+      <div className="border-t border-gray-200 p-4 space-y-2">
         <div className="flex gap-2">
           <input
             className="flex-1 rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            placeholder="Ask about your PDF…"
+            placeholder="Ask about your PDF..."
             disabled={streaming}
           />
           <button
@@ -125,17 +121,15 @@ export default function ChatInterface({ userId }: { userId: string }) {
             disabled={streaming || !input.trim()}
             className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50 hover:bg-blue-700 transition"
           >
-            {streaming ? "…" : "Send"}
-          </button>
-
-          {/* Clear button */}
-          <button
-            onClick={clearHistory}
-            className="rounded-xl border border-gray-300 px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50"
-          >
-            Clear
+            {streaming ? "..." : "Send"}
           </button>
         </div>
+        <button
+          onClick={clearHistory}
+          className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-500 hover:bg-gray-50"
+        >
+          Clear history
+        </button>
       </div>
     </div>
   );
