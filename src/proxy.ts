@@ -1,8 +1,10 @@
 import { auth } from "@/lib/auth";
+import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export default auth(function middleware(req: NextRequest) {
-  // auth middleware runs automatically
+  // Allow all — dashboard handles guest logic itself
+  return NextResponse.next();
 });
 
 export const config = {

@@ -6,7 +6,6 @@ type UploadResult = {
   chunksStored: number;
 };
 
-// Load PDF.js once when component mounts
 function usePdfJs() {
   const [ready, setReady] = useState(false);
 
@@ -82,22 +81,23 @@ export default function DropZone({ userId }: { userId: string }) {
   }
 
   return (
-    <div className="rounded-xl border-2 border-dashed border-gray-300 p-6 space-y-4 bg-white">
+    <div className="rounded-xl border-2 border-dashed border-gray-300 p-6 space-y-4 bg-blue-">
       <p className="font-semibold text-gray-700">📄 Upload a PDF</p>
 
-      <input
-        type="file"
-        accept=".pdf"
-        onChange={e => {
-          setFile(e.target.files?.[0] ?? null);
-          setStatus("idle");
-          setResult(null);
-          setError("");
-        }}
-        className="text-sm text-gray-500"
-      />
-
-      {file && <p className="text-sm text-gray-500 truncate">{file.name}</p>}
+      <label className="cursor-pointer flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition w-full">
+        <span>⊕ {file ? file.name : "Choose a PDF file"}</span>
+        <input
+          type="file"
+          accept=".pdf"
+          className="hidden"
+          onChange={e => {
+            setFile(e.target.files?.[0] ?? null);
+            setStatus("idle");
+            setResult(null);
+            setError("");
+          }}
+        />
+      </label>
 
       <button
         onClick={handleUpload}

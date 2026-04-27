@@ -1,21 +1,31 @@
 import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 import DropZone from "@/components/DropZone";
 import ChatInterface from "@/components/ChatInterface";
-import QuizGenerator from "@/components/QuizGenerator"; // Import the QuizGenerator component
-
+import QuizGenerator from "@/components/QuizGenerator";
 
 export default async function Dashboard() {
   const session = await auth();
-  if (!session) redirect("/login");
+  const isGuest = !session?.user;
+  const userId = session?.user?.id ?? "guest";
+
+  // Remove the redirect — allow guests through
+  // Only redirect if someone is clearly not supposed to be here
+  // (NextAuth will handle this via proxy.ts)
 
   return (
-    <main className="flex flex-col md:flex-row h-screen gap-4 p-4">
-      <div className="w-full md:w-1/3">
-        <DropZone userId={session.user!.id!} />
+    <main className="flex flex-col md:flex-row min-h-screen md:h-screen gap-4 p-4">
+      <div className="w-full md:w-1/3 space-y-3">
+        {isGuest && (
+          <div className="rounded-lg bg-yellow-50 border border-yellow-200 px-3 py-2 text-xs text-yellow-800 flex items-center justify-between">
+            <span>👤 Guest mode — data cleared after 24h</span>
+            <a href="/login" className="underline font-medium">Sign in</a>
+          </div>
+        )}
+        <DropZone userId={userId} />
       </div>
       <div className="flex-1 flex flex-col gap-4">
-        <ChatInterface userId={session.user!.id!} />
+        <ChatInterface userId={userId} />
         <QuizGenerator />
       </div>
     </main>
